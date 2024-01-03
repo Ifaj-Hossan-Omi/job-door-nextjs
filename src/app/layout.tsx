@@ -14,6 +14,12 @@ export const metadata: Metadata = {
   description: 'A job board for job seekers',
 }
 
+// const logout = () => {
+//   Cookies.remove("accessToken")
+// }
+
+
+
 export default function RootLayout({
   children,
 }: {
@@ -22,10 +28,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <nav style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <nav style={{ display: 'flex', justifyContent: 'space-between' }} >
           <h1>JobDoor</h1>
           <div className="flex space-x-4">
-            {/* {Cookies.get("accessToken") ? ( */}
+            {/* {!Cookies.get("accessToken") ? ( */}
+            <>
+              <Button variant="secondary">Create</Button>
+              {/* <Button variant="outline" onClick={logout}>Logout</Button> */}
+            </>
+            {/* ) : ( */}
             <>
               <Button >
                 <Link href="/auth/login">Login</Link>
@@ -34,11 +45,7 @@ export default function RootLayout({
                 <Link href="/auth/signup">Signup</Link>
               </Button>
             </>
-            {/* ) : (
-              <>
-                <Button variant="outline">Create</Button>
-              </>
-            )} */}
+            {/* )} */}
           </div>
         </nav>
         {children}

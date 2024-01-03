@@ -67,7 +67,7 @@ export default function AllJobs() {
         getJobs().then((data) => {
             setJobs(data);
         });
-    }, [AlertDialogAction]);
+    }, [jobs]);
 
     return (
         <main>
@@ -100,7 +100,7 @@ export default function AllJobs() {
                             <Button className=' my-2' variant="destructive">
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 <AlertDialog>
-                                    <AlertDialogTrigger>Open</AlertDialogTrigger>
+                                    <AlertDialogTrigger>Delete</AlertDialogTrigger>
                                     <AlertDialogContent>
                                         <AlertDialogHeader>
                                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

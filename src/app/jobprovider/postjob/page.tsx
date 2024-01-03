@@ -62,7 +62,8 @@ export default function CreateJob() {
     const JobLocationType = form.watch("JobLocationType");
 
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-
+        values.salary = parseInt(values.salary.toString());
+        values.vacancy = parseInt(values.vacancy.toString());
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/job/postjob`, {
             method: "POST",
             headers: {
@@ -77,8 +78,7 @@ export default function CreateJob() {
         if (response.status !== 201) {
             setAlertMessage(data.message);
         } else {
-            // window.location.href = "/auth/login";
-            // router.push("/auth/login");
+            window.location.href = "/jobprovider/alljobs";
             console.log(data);
         }
     };
@@ -180,7 +180,8 @@ export default function CreateJob() {
                                                 <Input
                                                     placeholder="salary"
                                                     type="number"
-                                                    {...parseInt(field)}
+                                                    {...field}
+                                                    onChange={e => field.onChange(e.target.valueAsNumber)}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -197,7 +198,7 @@ export default function CreateJob() {
                                         <FormItem>
                                             <FormLabel>Vacancy</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="vacancy" type="number" {...parseInt(field)} />
+                                                <Input placeholder="vacancy" type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

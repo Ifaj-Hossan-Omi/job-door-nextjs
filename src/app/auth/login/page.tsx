@@ -63,7 +63,7 @@ export default function Login() {
 
         if (response.status === 201) {
             Cookies.set("accessToken", data.accessToken, { expires: 1, path: "/" });
-            // window.location.href = "/dashboard";
+            window.location.href = "/jobprovider/alljobs";
             // document.cookie = `accessToken=${data.accessToken}; max-age=86400; path=/, HttpOnly=true`;
             // window.location.href = "/dashboard";
         } else {
