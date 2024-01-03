@@ -99,17 +99,17 @@ export default function Signup() {
 
         // Append all text fields
         for (const key in values) {
-            if (key !== "profilePicture" && values[key]) {
-                formData.append(key, values[key]);
+            if (key !== "profilePicture" && values[key as keyof typeof values]) {
+                formData.append(key, values[key as keyof typeof values] as string | Blob);
             }
         }
 
         // Append file separately
         if (values.profilePicture) {
-            formData.append("profilePicture", values.profilePicture);
+            formData.append("profilePicture", values.profilePicture as Blob);
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/jobprovider/createAccoun`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/jobprovider/createAccount`, {
             method: "POST",
             body: formData, // send formData as body
         });

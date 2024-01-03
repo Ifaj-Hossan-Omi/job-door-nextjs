@@ -49,12 +49,7 @@ export default function Login() {
 
 
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-        // try{
 
-        // }
-        // catch(err){
-        //     console.log(err);
-        // }
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/login`, {
             method: "POST",
             headers: {

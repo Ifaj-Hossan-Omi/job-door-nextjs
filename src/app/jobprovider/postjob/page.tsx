@@ -30,97 +30,54 @@ import {
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react";
+import Cookies from "js-cookie";
 // import { useRouter } from 'next/router';
 
 
 const formSchema = z
     .object({
-        name: z.string(),
-        email: z.string().email(),
-        username: z.string(),
-        password: z.string().min(3),
-        company: z.string(),
+        title: z.string(),
+        jobType: z.enum(["FULL_TIME", "PART_TIME", "INTERNSHIP"]),
+        description: z.string(),
+        salary: z.number(),
+        vacancy: z.number(),
         address: z.string(),
-        profilePicture: z.unknown().refine(value => value instanceof File, {
-            message: 'Expected a File',
-        }),
+        JobLocationType: z.enum(["Remote", "Office", "Hybrid"]),
     })
 
-export default function Signup() {
+export default function CreateJob() {
     const [alertMessage, setAlertMessage] = useState(null);
-    // const router = useRouter();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            email: "",
-            username: "",
-            password: "",
-            company: "",
+            title: "",
+            description: "",
+            salary: 0,
+            vacancy: 0,
             address: "",
-            profilePicture: "",
         },
     });
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            form.setValue("profilePicture", file);
-        }
-    };
-
-    // const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-
-
-
-    //     const response = await fetch("http://localhost:3000/jobprovider/createAccount", {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "multipart/form-data",
-    //         },
-    //         body: JSON.stringify(values),
-    //     });
-    //     const data = await response.json();
-    //     console.log(data);
-    //     // console.log(data.accessToken);
-
-    //     if (response.status === 201) {
-    //         // window.location.href = "/dashboard";
-    //         // document.cookie = `accessToken=${data.accessToken}; max-age=86400; path=/, HttpOnly=true`;
-    //         // window.location.href = "/dashboard";
-    //     } else {
-    //         alert("Invalid credentials");
-    //     }
-
-    // };
+    const jobType = form.watch("jobType");
+    const JobLocationType = form.watch("JobLocationType");
 
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-        const formData = new FormData();
 
-        // Append all text fields
-        for (const key in values) {
-            if (key !== "profilePicture" && values[key]) {
-                formData.append(key, values[key]);
-            }
-        }
-
-        // Append file separately
-        if (values.profilePicture) {
-            formData.append("profilePicture", values.profilePicture);
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/jobprovider/createAccoun`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/job/postjob`, {
             method: "POST",
-            body: formData, // send formData as body
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${Cookies.get("accessToken")}`,
+            },
+            body: JSON.stringify(values),
         });
-
         const data = await response.json();
         console.log(data);
 
         if (response.status !== 201) {
             setAlertMessage(data.message);
         } else {
-            window.location.href = "/auth/login";
+            // window.location.href = "/auth/login";
             // router.push("/auth/login");
             console.log(data);
         }
@@ -149,14 +106,14 @@ export default function Signup() {
                             )}
                             <FormField
                                 control={form.control}
-                                name="name"
+                                name="title"
                                 render={({ field }) => {
                                     return (
                                         <FormItem>
-                                            <FormLabel>Name</FormLabel>
+                                            <FormLabel>Title</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="name"
+                                                    placeholder="title"
                                                     type="text"
                                                     {...field}
                                                 />
@@ -169,18 +126,23 @@ export default function Signup() {
 
                             <FormField
                                 control={form.control}
-                                name="email"
+                                name="jobType"
                                 render={({ field }) => {
                                     return (
                                         <FormItem>
-                                            <FormLabel>Email</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="email"
-                                                    type="email"
-                                                    {...field}
-                                                />
-                                            </FormControl>
+                                            <FormLabel>Job type</FormLabel>
+                                            <Select onValueChange={field.onChange}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select an job type" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="FULL_TIME">Full Time</SelectItem>
+                                                    <SelectItem value="PART_TIME">Part Time</SelectItem>
+                                                    <SelectItem value="INTERNSHIP">Internship</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     );
@@ -189,14 +151,14 @@ export default function Signup() {
 
                             <FormField
                                 control={form.control}
-                                name="username"
+                                name="description"
                                 render={({ field }) => {
                                     return (
                                         <FormItem>
-                                            <FormLabel>Username</FormLabel>
+                                            <FormLabel>Description</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="username"
+                                                    placeholder="description"
                                                     type="text"
                                                     {...field}
                                                 />
@@ -209,13 +171,17 @@ export default function Signup() {
 
                             <FormField
                                 control={form.control}
-                                name="password"
+                                name="salary"
                                 render={({ field }) => {
                                     return (
                                         <FormItem>
-                                            <FormLabel>Password</FormLabel>
+                                            <FormLabel>Salary</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Password" type="password" {...field} />
+                                                <Input
+                                                    placeholder="salary"
+                                                    type="number"
+                                                    {...parseInt(field)}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -225,17 +191,13 @@ export default function Signup() {
 
                             <FormField
                                 control={form.control}
-                                name="company"
+                                name="vacancy"
                                 render={({ field }) => {
                                     return (
                                         <FormItem>
-                                            <FormLabel>Company</FormLabel>
+                                            <FormLabel>Vacancy</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    placeholder="company"
-                                                    type="text"
-                                                    {...field}
-                                                />
+                                                <Input placeholder="vacancy" type="number" {...parseInt(field)} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -265,20 +227,28 @@ export default function Signup() {
 
                             <FormField
                                 control={form.control}
-                                name="profilePicture"
+                                name="JobLocationType"
                                 render={({ field }) => {
                                     return (
                                         <FormItem>
-                                            <FormLabel>Profile Picture</FormLabel>
-                                            <FormControl>
-                                                <input type="file" name="profilePicture" onChange={handleImageUpload} />
-                                            </FormControl>
+                                            <FormLabel>Job location type</FormLabel>
+                                            <Select onValueChange={field.onChange}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select an location type" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Remote">Remote</SelectItem>
+                                                    <SelectItem value="Office">Office</SelectItem>
+                                                    <SelectItem value="Hybrid">Hybrid</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     );
                                 }}
                             />
-
 
                             <Button type="submit" className="w-full">
                                 Submit

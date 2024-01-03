@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { Button } from "@/components/ui/button"
 import './globals.css'
 import Link from 'next/link'
+import Cookies from 'js-cookie'
 // import { useRouter } from 'next/navigation'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -24,10 +25,20 @@ export default function RootLayout({
         <nav style={{ display: 'flex', justifyContent: 'space-between' }}>
           <h1>JobDoor</h1>
           <div className="flex space-x-4">
-            <Button >
-              <Link href="/auth/login">Login</Link>
-            </Button>
-            <Button variant="outline">Signup</Button>
+            {/* {Cookies.get("accessToken") ? ( */}
+            <>
+              <Button >
+                <Link href="/auth/login">Login</Link>
+              </Button>
+              <Button variant="outline">
+                <Link href="/auth/signup">Signup</Link>
+              </Button>
+            </>
+            {/* ) : (
+              <>
+                <Button variant="outline">Create</Button>
+              </>
+            )} */}
           </div>
         </nav>
         {children}
